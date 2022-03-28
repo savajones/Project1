@@ -119,23 +119,42 @@ object CombineAnalysis {
   def queries(): Unit ={
     /*----Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle----*/
     spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine").show()
+      /*----By position----*/
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='S'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='LB'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='OT'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='WR'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='RB'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='CB'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='OL'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='TE'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='DL'").show()
+      spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine WHERE Pos='QB'").show()
     /*----Top 10 athletes in each event----*/
-    spark.sql("")
+    spark.sql("SELECT Player,Pos,40yd FROM 2019NFLCombine ORDER BY 40yd ASC NULLS LAST LIMIT 10 ").show()
+    spark.sql("SELECT Player,Pos,Vertical FROM 2019NFLCombine ORDER BY Vertical DESC NULLS LAST LIMIT 10 ").show()
+    spark.sql("SELECT Player,Pos,Bench FROM 2019NFLCombine ORDER BY Bench DESC NULLS LAST LIMIT 10 ").show()
+    spark.sql("SELECT Player,Pos,3Cone FROM 2019NFLCombine ORDER BY 3Cone ASC NULLS LAST LIMIT 10 ").show()
+    spark.sql("SELECT Player,Pos,Shuttle FROM 2019NFLCombine ORDER BY Shuttle ASC NULLS LAST LIMIT 10 ").show()
     /*----Min and max of each event----*/
-    spark.sql("")
+    spark.sql("SELECT MIN(40yd) AS MIN_40,MAX(40yd) AS MAX_40 FROM 2019NFLCombine").show()
+    spark.sql("SELECT MIN(Vertical) AS MIN_Vertical,MAX(Vertical) AS MAX_Vertical FROM 2019NFLCombine").show()
+    spark.sql("SELECT MIN(Bench) AS MIN_Bench,MAX(Bench) AS MAX_Bench FROM 2019NFLCombine").show()
+    spark.sql("SELECT MIN(3Cone) AS MIN_3Cone,MAX(3Cone) AS MAX_3Cone FROM 2019NFLCombine").show()
+    spark.sql("SELECT MIN(Shuttle) AS MIN_Shuttle,MAX(Shuttle) AS MAX_Shuttle FROM 2019NFLCombine").show()
     /*----Number of different schools that got drafted----*/
-    spark.sql("")
+    spark.sql("SELECT DISTINCT COUNT(School) AS Schools FROM 2019NFLCombine WHERE Drafted IS NOT NULL").show()
     /*----School with the most draft picks----*/
-    spark.sql("")
-    /*----Clemson athlete draft picks----*/
-    spark.sql("")
+    spark.sql("SELECT School,COUNT(Drafted) AS Draft_Picks FROM 2019NFLCombine GROUP BY School ORDER BY Draft_Picks DESC NULLS LAST LIMIT 10").show()
+    /*----Clemson athlete draft picks (tm/rnd/yr)----*/
+    spark.sql("SELECT Player,School,Drafted AS Draft_Pick FROM 2019NFLCombine WHERE School='Clemson' AND Drafted IS NOT NULL").show(1000,1000,false)
   }
 
   /*----LOGIN----*/
   def login(username: String,password: String) ={
 
   }
-  spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine").show()
+
   def main(args: Array[String]): Unit ={
     println(Console.RED+"\n███████████████████████████████████████████████████████████████████████████████████████\n█▀▄▄▀█─▄▄─█▀░██░▄▄░███▄─▀█▄─▄█▄─▄▄─█▄─▄█████─▄▄▄─█─▄▄─█▄─▀█▀─▄█▄─▄─▀█▄─▄█▄─▀█▄─▄█▄─▄▄─█\n██▀▄██─██─██░██▄▄▄░████─█▄▀─███─▄████─██▀███─███▀█─██─██─█▄█─███─▄─▀██─███─█▄▀─███─▄█▀█\n▀▄▄▄▄▀▄▄▄▄▀▄▄▄▀▄▄▄▄▀▀▀▄▄▄▀▀▄▄▀▄▄▄▀▀▀▄▄▄▄▄▀▀▀▄▄▄▄▄▀▄▄▄▄▀▄▄▄▀▄▄▄▀▄▄▄▄▀▀▄▄▄▀▄▄▄▀▀▄▄▀▄▄▄▄▄▀")
     println(Console.RESET)
@@ -157,3 +176,4 @@ object CombineAnalysis {
 
   }
 }
+//git push -u origin main
