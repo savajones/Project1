@@ -1,0 +1,2 @@
+Savannah,sjones,ssj1,ADMIN
+Dave,davidw,passw0rd,BASIC
