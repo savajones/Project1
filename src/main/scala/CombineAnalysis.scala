@@ -84,27 +84,29 @@ object CombineAnalysis {
       case 5 =>
         /*----UPDATE USERNAME----*/
         println("Please verify your login info:\n" +
-          "Username:\n")
-        val usernameu = readLine()
+          "First Name:\n")
+        val firstname1 = readLine()
+        println("Username:\n")
+        val usernameu1 = readLine()
         println("Password:\n")
-        val passwordu = readLine()
+        val passwordu1 = readLine()
         println("New Username:\n")
-        val usernamenew = readLine()
-        spark.sql(s"SELECT * FROM Users WHERE Username='$usernameu' AND Password='$passwordu'")
-
+        val usernamenew1 = readLine()
+        spark.sql(s"INSERT INTO Users VALUES('$firstname1','$usernamenew1','$passwordu1','ADMIN')")
         println("Username updated successfully")
         adminm()
       case 6 =>
         /*----UPDATE PASSWORD----*/
         println("Please verify your login info:\n" +
-          "Username:\n")
-        val usernameu = readLine()
+          "First Name:\n")
+        val firstname2 = readLine()
+        println("Username:\n")
+        val usernameu2 = readLine()
         println("Password:\n")
-        val passwordu = readLine()
+        val passwordu2 = readLine()
         println("New Password:\n")
-        val passwordnew = readLine()
-        spark.sql(s"SELECT * FROM Users WHERE Username='$usernameu' AND Password='$passwordu'")
-
+        val passwordnew2 = readLine()
+        spark.sql(s"INSERT INTO Users VALUES('$firstname2','$usernameu2','$passwordnew2','ADMIN')")
         println("Password updated successfully")
         main(null)
       case 7 =>
@@ -130,26 +132,29 @@ object CombineAnalysis {
       case 2 =>
         /*----UPDATE USERNAME----*/
         println("Please verify your login info:\n" +
-          "Username:\n")
+          "First Name:\n")
+        val firstname = readLine()
+        println("Username:\n")
         val usernameu = readLine()
         println("Password:\n")
         val passwordu = readLine()
         println("New Username:\n")
         val usernamenew = readLine()
-        var update = spark.sql(s"SELECT Username from Users WHERE Username='$usernameu' AND Password='$passwordu'").head().getString(0)
-        update = usernamenew
+        spark.sql(s"INSERT INTO Users VALUES('$firstname','$usernamenew','$passwordu','BASIC')")
         println("Username updated successfully")
         basicm()
       case 3 =>
         /*----UPDATE PASSWORD----*/
         println("Please verify your login info:\n" +
-          "Username:\n")
-        val usernameu = readLine()
+          "First Name:\n")
+        val firstname1 = readLine()
+        println("Username:\n")
+        val usernameu1 = readLine()
         println("Password:\n")
-        val passwordu = readLine()
+        val passwordu1 = readLine()
         println("New Password:\n")
         val passwordnew = readLine()
-        spark.sql(s"SELECT REPLACE('Password','$passwordu','$passwordnew') FROM Users WHERE Username='$usernameu'")
+        spark.sql(s"INSERT INTO Users VALUES('$firstname1','$usernameu1','$passwordnew','BASIC')")
         println("Password updated successfully")
         main(null)
       case 4 =>
