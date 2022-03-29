@@ -1,6 +1,7 @@
 import CombineAnalysis.spark
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.log4j.{Level, Logger}
+import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 import scala.io.StdIn.readInt
 
@@ -74,23 +75,42 @@ object CombineAnalysis {
         json match{
           case 1 =>
             {spark.sql(s"SELECT Player,School,Drafted AS Draft_Pick FROM 2019NFLCombine WHERE School='$diffs' AND Drafted IS NOT NULL").write.format("org.apache.spark.sql.json").mode("overwrite").save("src/main/Data")
-            println("Saved to Data directory")}
+            println("Saved to src/main/Data")}
             adminm()
           case 2 =>
-            println("Returning to main menu...")
+            println("Returning to ADMIN menu...")
             adminm()
         }
       case 5 =>
         /*----UPDATE USERNAME----*/
+        println("Please verify your login info:\n" +
+          "Username:\n")
+        val usernameu = readLine()
+        println("Password:\n")
+        val passwordu = readLine()
+        println("New Username:\n")
+        val usernamenew = readLine()
+        spark.sql(s"SELECT * FROM Users WHERE Username='$usernameu' AND Password='$passwordu'")
+
         println("Username updated successfully")
         adminm()
       case 6 =>
         /*----UPDATE PASSWORD----*/
+        println("Please verify your login info:\n" +
+          "Username:\n")
+        val usernameu = readLine()
+        println("Password:\n")
+        val passwordu = readLine()
+        println("New Password:\n")
+        val passwordnew = readLine()
+        spark.sql(s"SELECT * FROM Users WHERE Username='$usernameu' AND Password='$passwordu'")
+
         println("Password updated successfully")
-        adminm()
+        main(null)
       case 7 =>
         /*----LOGOUT----*/
         println("Successfully logged out")
+        main(null)
     }
   }
 
@@ -109,15 +129,33 @@ object CombineAnalysis {
         basicm()
       case 2 =>
         /*----UPDATE USERNAME----*/
+        println("Please verify your login info:\n" +
+          "Username:\n")
+        val usernameu = readLine()
+        println("Password:\n")
+        val passwordu = readLine()
+        println("New Username:\n")
+        val usernamenew = readLine()
+        var update = spark.sql(s"SELECT Username from Users WHERE Username='$usernameu' AND Password='$passwordu'").head().getString(0)
+        update = usernamenew
         println("Username updated successfully")
         basicm()
       case 3 =>
         /*----UPDATE PASSWORD----*/
+        println("Please verify your login info:\n" +
+          "Username:\n")
+        val usernameu = readLine()
+        println("Password:\n")
+        val passwordu = readLine()
+        println("New Password:\n")
+        val passwordnew = readLine()
+        spark.sql(s"SELECT REPLACE('Password','$passwordu','$passwordnew') FROM Users WHERE Username='$usernameu'")
         println("Password updated successfully")
-        basicm()
+        main(null)
       case 4 =>
         /*----LOGOUT----*/
         println("Successfully logged out")
+        main(null)
     }
   }
 
@@ -131,6 +169,7 @@ object CombineAnalysis {
     val pw = readLine()
     println("Account created successfully\n")
     spark.sql(s"INSERT INTO Users VALUES('$fn','$un','$pw','BASIC')")
+    main(null)
   }
 
   def queries(): Unit = {
@@ -203,24 +242,35 @@ object CombineAnalysis {
   }
 
   def main(args: Array[String]): Unit ={
-    println(Console.RED+"\n███████████████████████████████████████████████████████████████████████████████████████\n█▀▄▄▀█─▄▄─█▀░██░▄▄░███▄─▀█▄─▄█▄─▄▄─█▄─▄█████─▄▄▄─█─▄▄─█▄─▀█▀─▄█▄─▄─▀█▄─▄█▄─▀█▄─▄█▄─▄▄─█\n██▀▄██─██─██░██▄▄▄░████─█▄▀─███─▄████─██▀███─███▀█─██─██─█▄█─███─▄─▀██─███─█▄▀─███─▄█▀█\n▀▄▄▄▄▀▄▄▄▄▀▄▄▄▀▄▄▄▄▀▀▀▄▄▄▀▀▄▄▀▄▄▄▀▀▀▄▄▄▄▄▀▀▀▄▄▄▄▄▀▄▄▄▄▀▄▄▄▀▄▄▄▀▄▄▄▄▀▀▄▄▄▀▄▄▄▀▀▄▄▀▄▄▄▄▄▀")
+    println(Console.RED+
+      "\n███████████████████████████████████████████████████████████████████████████████████████" +
+      "\n█▀▄▄▀█─▄▄─█▀░██░▄▄░███▄─▀█▄─▄█▄─▄▄─█▄─▄█████─▄▄▄─█─▄▄─█▄─▀█▀─▄█▄─▄─▀█▄─▄█▄─▀█▄─▄█▄─▄▄─█" +
+      "\n██▀▄██─██─██░██▄▄▄░████─█▄▀─███─▄████─██▀███─███▀█─██─██─█▄█─███─▄─▀██─███─█▄▀─███─▄█▀█" +
+      "\n▀▄▄▄▄▀▄▄▄▄▀▄▄▄▀▄▄▄▄▀▀▀▄▄▄▀▀▄▄▀▄▄▄▀▀▀▄▄▄▄▄▀▀▀▄▄▄▄▄▀▄▄▄▄▀▄▄▄▀▄▄▄▀▄▄▄▄▀▀▄▄▄▀▄▄▄▀▀▄▄▀▄▄▄▄▄▀")
     println(Console.RESET)
+    println(Console.BLUE)
     println("Login or create an account to view an analysis of the 2019 NFL Combine")
+    println(Console.RESET)
     println("[1] Login \n" +
       "[2] Create an account")
     val user = readInt()
     user match{
       case 1 =>
         /*----LOGIN----*/
-        println("Enter username:\n")
-        val username = readLine()
-        println("Enter password:\n")
-        val password = readLine()
-        val login = spark.sql(s"SELECT Permission FROM Users WHERE Username='$username' AND Password='$password'")
-        if (login.head().getString(0) == "ADMIN"){
-          adminm()
-        }else{
-          basicm()
+        try {
+          println("Enter username:\n")
+          val username = readLine()
+          println("Enter password:\n")
+          val password = readLine()
+          val login = spark.sql(s"SELECT Permission FROM Users WHERE Username='$username' AND Password='$password'")
+          if (login.head().getString(0) == "ADMIN") {
+            adminm()
+          } else {
+            basicm()
+          }
+        } catch{
+          case e: java.util.NoSuchElementException => println("Username or Password is incorrect")
+            main(null)
         }
       case 2 =>
         /*----NEW USER----*/
