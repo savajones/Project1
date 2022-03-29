@@ -177,8 +177,8 @@ object CombineAnalysis {
     main(null)
   }
 
+  /*----QUERIES----*/
   def queries(): Unit = {
-    /*----QUERIES----*/
     println(
       "[1] Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle\n" +
       "[2] Top 10 athletes in each event\n" +
@@ -269,8 +269,12 @@ object CombineAnalysis {
           val password = readLine()
           val login = spark.sql(s"SELECT Permission FROM Users WHERE Username='$username' AND Password='$password'")
           if (login.head().getString(0) == "ADMIN") {
+            val welcome = spark.sql(s"SELECT Name FROM Users WHERE Username='$username' AND Password='$password'").head().getString(0)
+            println(s"Welcome back, $welcome\n")
             adminm()
           } else {
+            val welcome = spark.sql(s"SELECT Name FROM Users WHERE Username='$username' AND Password='$password'").head().getString(0)
+            println(s"Welcome back, $welcome\n")
             basicm()
           }
         } catch{
