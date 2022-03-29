@@ -25,12 +25,9 @@ object CombineAnalysis {
   combinecsv.createOrReplaceTempView("2019NFLCombine")
   spark.sql("SET spark.hadoop.hive.exec.dynamic.partition = true")
   spark.sql("SET hive.exec.dynamic.partition.mode=nonstrict")
-  val userscsv: DataFrame =spark.read.format("csv")
-    .option("delimiter", ",")
-    .option("header", "true")
-    .option("inferSchema", "true")
-    .load("src/main/Resources/Users.csv")
-  userscsv.createOrReplaceTempView("Users")
+  spark.sql("DROP Table IF EXISTS Users")
+  spark.sql("CREATE TABLE Users(Name String,Username String,Password String) PARTITIONED BY(Permission String)")
+  spark.sql("INSERT INTO TABLE Users VALUES('Savannah','sjones','ssj1','ADMIN'),('Dave','davidw','passw0rd','BASIC')")
 
   /*----ADMIN MENU----*/
   def adminm(): Unit ={
@@ -46,78 +43,23 @@ object CombineAnalysis {
     adminc match{
       case 1 =>
         /*----NEW ADMIN----*/
+        println("Enter your first name:\n")
+        val fna = readLine()
+        println("Create a username:\n")
+        val una = readLine()
+        println("Create a password:\n")
+        val pwa = readLine()
+        println("ADMIN created successfully\n")
+        spark.sql(s"INSERT INTO Users VALUES('$fna','$una','$pwa','ADMIN')")
+        adminm()
       case 2 =>
         /*----SHOW USERS----*/
         spark.sql("SELECT * FROM Users").show()
+        adminm()
       case 3 =>
         /*----QUERIES----*/
-        println(
-            "[1] Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle\n" +
-            "[2] Top 10 athletes in each event\n" +
-            "[3] Min and max of each event\n" +
-            "[4] Number of different schools that got drafted\n" +
-            "[5] School with the most draft picks\n" +
-            "[6] Clemson athlete draft picks\n")
-        val admincc = readInt()
-        admincc match{
-          case 1 =>
-            println(
-                "[1] Overall average\n" +
-                "[2] Position average\n"
-            )
-            val average = readInt()
-            average match {
-              case 1 =>
-                /*----Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle----*/
-                spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine").show()
-              case 2 =>
-                /*----By position----*/
-                spark.sql("SELECT Pos,AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine GROUP BY Pos").show()
-            }
-          case 2 =>
-            /*----Top 10 athletes in each event----*/
-            println(
-                "[1] 40yd\n" +
-                "[2] Vertical\n" +
-                "[3] Bench\n" +
-                "[4] 3Cone\n" +
-                "[5] Shuttle"
-            )
-            val top10 = readInt()
-            top10 match{
-              case 1 =>
-                /*----40yd----*/
-                spark.sql("SELECT Player,Pos,40yd FROM 2019NFLCombine ORDER BY 40yd ASC NULLS LAST LIMIT 10 ").show()
-              case 2 =>
-                /*----Vertical----*/
-                spark.sql("SELECT Player,Pos,Vertical FROM 2019NFLCombine ORDER BY Vertical DESC NULLS LAST LIMIT 10 ").show()
-              case 3 =>
-                /*----Bench----*/
-                spark.sql("SELECT Player,Pos,Bench FROM 2019NFLCombine ORDER BY Bench DESC NULLS LAST LIMIT 10 ").show()
-              case 4 =>
-                /*----3Cone----*/
-                spark.sql("SELECT Player,Pos,3Cone FROM 2019NFLCombine ORDER BY 3Cone ASC NULLS LAST LIMIT 10 ").show()
-              case 5 =>
-                /*----Shuttle----*/
-                spark.sql("SELECT Player,Pos,Shuttle FROM 2019NFLCombine ORDER BY Shuttle ASC NULLS LAST LIMIT 10 ").show()
-            }
-          case 3 =>
-            /*----Min and max of each event----*/
-            spark.sql("SELECT MIN(40yd) AS MIN_40,MAX(40yd) AS MAX_40 FROM 2019NFLCombine").show()
-            spark.sql("SELECT MIN(Vertical) AS MIN_Vertical,MAX(Vertical) AS MAX_Vertical FROM 2019NFLCombine").show()
-            spark.sql("SELECT MIN(Bench) AS MIN_Bench,MAX(Bench) AS MAX_Bench FROM 2019NFLCombine").show()
-            spark.sql("SELECT MIN(3Cone) AS MIN_3Cone,MAX(3Cone) AS MAX_3Cone FROM 2019NFLCombine").show()
-            spark.sql("SELECT MIN(Shuttle) AS MIN_Shuttle,MAX(Shuttle) AS MAX_Shuttle FROM 2019NFLCombine").show()
-          case 4 =>
-            /*----Number of different schools that got drafted----*/
-            spark.sql("SELECT DISTINCT COUNT(School) AS Schools FROM 2019NFLCombine WHERE Drafted IS NOT NULL").show()
-          case 5 =>
-            /*----School with the most draft picks----*/
-            spark.sql("SELECT School,COUNT(Drafted) AS Draft_Picks FROM 2019NFLCombine GROUP BY School ORDER BY Draft_Picks DESC NULLS LAST LIMIT 10").show()
-          case 6 =>
-            /*----Clemson athlete draft picks (tm/rnd/yr)----*/
-            spark.sql("SELECT Player,School,Drafted AS Draft_Pick FROM 2019NFLCombine WHERE School='Clemson' AND Drafted IS NOT NULL").show(1000,1000,false)
-        }
+        queries()
+        adminm()
       case 4 =>
         /*----UPDATE QUERY----*/
         println("Enter a different school to see their draft picks:\n")
@@ -131,14 +73,24 @@ object CombineAnalysis {
         val json = readInt()
         json match{
           case 1 =>
+            {spark.sql(s"SELECT Player,School,Drafted AS Draft_Pick FROM 2019NFLCombine WHERE School='$diffs' AND Drafted IS NOT NULL").write.format("org.apache.spark.sql.json").mode("overwrite").save("src/main/Data")
+            println("Saved to Data directory")}
+            adminm()
           case 2 =>
+            println("Returning to main menu...")
+            adminm()
         }
       case 5 =>
         /*----UPDATE USERNAME----*/
+        println("Username updated successfully")
+        adminm()
       case 6 =>
         /*----UPDATE PASSWORD----*/
+        println("Password updated successfully")
+        adminm()
       case 7 =>
         /*----LOGOUT----*/
+        println("Successfully logged out")
     }
   }
 
@@ -153,79 +105,19 @@ object CombineAnalysis {
     basicc match{
       case 1 =>
         /*----QUERIES----*/
-        println(
-          "[1] Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle\n" +
-            "[2] Top 10 athletes in each event\n" +
-            "[3] Min and max of each event\n" +
-            "[4] Number of different schools that got drafted\n" +
-            "[5] School with the most draft picks\n" +
-            "[6] Clemson athlete draft picks\n")
-        val basiccc = readInt()
-        basiccc match{
-          case 1 =>
-            println(
-              "[1] Overall average\n" +
-                "[2] Position average\n"
-            )
-            val average = readInt()
-            average match {
-              case 1 =>
-                /*----Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle----*/
-                spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine").show()
-              case 2 =>
-                /*----By position----*/
-                spark.sql("SELECT Pos,AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine GROUP BY Pos").show()
-            }
-          case 2 =>
-            /*----Top 10 athletes in each event----*/
-            println(
-              "[1] 40yd\n" +
-                "[2] Vertical\n" +
-                "[3] Bench\n" +
-                "[4] 3Cone\n" +
-                "[5] Shuttle"
-            )
-            val top10 = readInt()
-            top10 match{
-              case 1 =>
-                /*----40yd----*/
-                spark.sql("SELECT Player,Pos,40yd FROM 2019NFLCombine ORDER BY 40yd ASC NULLS LAST LIMIT 10 ").show()
-              case 2 =>
-                /*----Vertical----*/
-                spark.sql("SELECT Player,Pos,Vertical FROM 2019NFLCombine ORDER BY Vertical DESC NULLS LAST LIMIT 10 ").show()
-              case 3 =>
-                /*----Bench----*/
-                spark.sql("SELECT Player,Pos,Bench FROM 2019NFLCombine ORDER BY Bench DESC NULLS LAST LIMIT 10 ").show()
-              case 4 =>
-                /*----3Cone----*/
-                spark.sql("SELECT Player,Pos,3Cone FROM 2019NFLCombine ORDER BY 3Cone ASC NULLS LAST LIMIT 10 ").show()
-              case 5 =>
-                /*----Shuttle----*/
-                spark.sql("SELECT Player,Pos,Shuttle FROM 2019NFLCombine ORDER BY Shuttle ASC NULLS LAST LIMIT 10 ").show()
-            }
-          case 3 =>
-            /*----Min and max of each event----*/
-            spark.sql("SELECT MIN(40yd) AS MIN_40,MAX(40yd) AS MAX_40 FROM 2019NFLCombine").show()
-            spark.sql("SELECT MIN(Vertical) AS MIN_Vertical,MAX(Vertical) AS MAX_Vertical FROM 2019NFLCombine").show()
-            spark.sql("SELECT MIN(Bench) AS MIN_Bench,MAX(Bench) AS MAX_Bench FROM 2019NFLCombine").show()
-            spark.sql("SELECT MIN(3Cone) AS MIN_3Cone,MAX(3Cone) AS MAX_3Cone FROM 2019NFLCombine").show()
-            spark.sql("SELECT MIN(Shuttle) AS MIN_Shuttle,MAX(Shuttle) AS MAX_Shuttle FROM 2019NFLCombine").show()
-          case 4 =>
-            /*----Number of different schools that got drafted----*/
-            spark.sql("SELECT DISTINCT COUNT(School) AS Schools FROM 2019NFLCombine WHERE Drafted IS NOT NULL").show()
-          case 5 =>
-            /*----School with the most draft picks----*/
-            spark.sql("SELECT School,COUNT(Drafted) AS Draft_Picks FROM 2019NFLCombine GROUP BY School ORDER BY Draft_Picks DESC NULLS LAST LIMIT 10").show()
-          case 6 =>
-            /*----Clemson athlete draft picks (tm/rnd/yr)----*/
-            spark.sql("SELECT Player,School,Drafted AS Draft_Pick FROM 2019NFLCombine WHERE School='Clemson' AND Drafted IS NOT NULL").show(1000,1000,false)
-        }
+        queries()
+        basicm()
       case 2 =>
         /*----UPDATE USERNAME----*/
+        println("Username updated successfully")
+        basicm()
       case 3 =>
         /*----UPDATE PASSWORD----*/
+        println("Password updated successfully")
+        basicm()
       case 4 =>
         /*----LOGOUT----*/
+        println("Successfully logged out")
     }
   }
 
@@ -241,9 +133,73 @@ object CombineAnalysis {
     spark.sql(s"INSERT INTO Users VALUES('$fn','$un','$pw','BASIC')")
   }
 
-  /*----LOGIN----*/
-  def login(username: String,password: String) ={
-
+  def queries(): Unit = {
+    /*----QUERIES----*/
+    println(
+      "[1] Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle\n" +
+      "[2] Top 10 athletes in each event\n" +
+      "[3] Min and max of each event\n" +
+      "[4] Number of different schools that got drafted\n" +
+      "[5] School with the most draft picks\n" +
+      "[6] Clemson athlete draft picks\n")
+    val admincc = readInt()
+    admincc match{
+      case 1 =>
+        println(
+          "[1] Overall average\n" +
+          "[2] Position average\n")
+        val average = readInt()
+        average match {
+          case 1 =>
+            /*----Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle----*/
+            spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine").show()
+          case 2 =>
+            /*----By position----*/
+            spark.sql("SELECT Pos,AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine GROUP BY Pos").show()
+        }
+      case 2 =>
+        /*----Top 10 athletes in each event----*/
+        println(
+          "[1] 40yd\n" +
+          "[2] Vertical\n" +
+          "[3] Bench\n" +
+          "[4] 3Cone\n" +
+          "[5] Shuttle")
+        val top10 = readInt()
+        top10 match{
+          case 1 =>
+            /*----40yd----*/
+            spark.sql("SELECT Player,Pos,40yd FROM 2019NFLCombine ORDER BY 40yd ASC NULLS LAST LIMIT 10 ").show()
+          case 2 =>
+            /*----Vertical----*/
+            spark.sql("SELECT Player,Pos,Vertical FROM 2019NFLCombine ORDER BY Vertical DESC NULLS LAST LIMIT 10 ").show()
+          case 3 =>
+            /*----Bench----*/
+            spark.sql("SELECT Player,Pos,Bench FROM 2019NFLCombine ORDER BY Bench DESC NULLS LAST LIMIT 10 ").show()
+          case 4 =>
+            /*----3Cone----*/
+            spark.sql("SELECT Player,Pos,3Cone FROM 2019NFLCombine ORDER BY 3Cone ASC NULLS LAST LIMIT 10 ").show()
+          case 5 =>
+            /*----Shuttle----*/
+            spark.sql("SELECT Player,Pos,Shuttle FROM 2019NFLCombine ORDER BY Shuttle ASC NULLS LAST LIMIT 10 ").show()
+        }
+      case 3 =>
+        /*----Min and max of each event----*/
+        spark.sql("SELECT MIN(40yd) AS MIN_40,MAX(40yd) AS MAX_40 FROM 2019NFLCombine").show()
+        spark.sql("SELECT MIN(Vertical) AS MIN_Vertical,MAX(Vertical) AS MAX_Vertical FROM 2019NFLCombine").show()
+        spark.sql("SELECT MIN(Bench) AS MIN_Bench,MAX(Bench) AS MAX_Bench FROM 2019NFLCombine").show()
+        spark.sql("SELECT MIN(3Cone) AS MIN_3Cone,MAX(3Cone) AS MAX_3Cone FROM 2019NFLCombine").show()
+        spark.sql("SELECT MIN(Shuttle) AS MIN_Shuttle,MAX(Shuttle) AS MAX_Shuttle FROM 2019NFLCombine").show()
+      case 4 =>
+        /*----Number of different schools that got drafted----*/
+        spark.sql("SELECT DISTINCT COUNT(School) AS Schools FROM 2019NFLCombine WHERE Drafted IS NOT NULL").show()
+      case 5 =>
+        /*----School with the most draft picks----*/
+        spark.sql("SELECT School,COUNT(Drafted) AS Draft_Picks FROM 2019NFLCombine GROUP BY School ORDER BY Draft_Picks DESC NULLS LAST LIMIT 10").show()
+      case 6 =>
+        /*----Clemson athlete draft picks (tm/rnd/yr)----*/
+        spark.sql("SELECT Player,School,Drafted AS Draft_Pick FROM 2019NFLCombine WHERE School='Clemson' AND Drafted IS NOT NULL").show(1000,1000,false)
+    }
   }
 
   def main(args: Array[String]): Unit ={
@@ -260,14 +216,20 @@ object CombineAnalysis {
         val username = readLine()
         println("Enter password:\n")
         val password = readLine()
-        spark.sql(s"SELECT Permission FROM Users WHERE Username='$username' AND Password='$password'")
-
+        val login = spark.sql(s"SELECT Permission FROM Users WHERE Username='$username' AND Password='$password'")
+        if (login.head().getString(0) == "ADMIN"){
+          adminm()
+        }else{
+          basicm()
+        }
       case 2 =>
         /*----NEW USER----*/
         newusr(2)
     }
   }
+
 }
+
 /*----QUERIES----*/
   /*----Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle----*/
   //spark.sql("SELECT AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine").show()
