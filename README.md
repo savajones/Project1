@@ -19,7 +19,6 @@ Project1 is an analysis of the 2019 NFL Combine using a Scala console applicatio
 - Scala
 - Hive
 - Hadoop
-- Spark
 # Get Started
 $ git clone https://github.com/savajones/Project1
 # Resources
