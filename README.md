@@ -22,7 +22,8 @@ Project1 is an analysis of the 2019 NFL Combine using a Scala console applicatio
 # Get Started
 $ git clone https://github.com/savajones/Project1
 # Usage
-- Enter a numerical value from the provided menu
+Enter a numerical value from the provided menu:
+
 ![Screen Shot 2022-04-05 at 12 04 52 PM](https://user-images.githubusercontent.com/100616163/161797755-e5a199c8-0161-4bda-973e-22ebe402e2fc.png)
 ![Screen Shot 2022-04-05 at 12 06 05 PM](https://user-images.githubusercontent.com/100616163/161797768-800c8ee8-06ed-41c8-80b5-7f9a52328169.png)
 # Future Development
