@@ -31,6 +31,5 @@ Enter a numerical value from the provided menu:
 - Export all queries to JSON
 - Encrypted passwords for login
 - Handle input mismatch
-# Resources
+# Data Resource
 https://www.pro-football-reference.com/draft/2019-combine.htm#combine
-
