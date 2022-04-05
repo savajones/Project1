@@ -1,5 +1,5 @@
 # Project 1
-Analysis of the 2019 NFL Combine using a Scala console application that is retrieving data using Hive
+Project1 is an analysis of the 2019 NFL Combine using a Scala console application that is retrieving data using Hive.
 # MVP
 - Login functionality
   - 2 types of users: ADMIN & BASIC
@@ -18,7 +18,7 @@ Analysis of the 2019 NFL Combine using a Scala console application that is retri
 - Scala
 - Hive
 # Get Started
-git clone https://github.com/savajones/Project1
+$ git clone https://github.com/savajones/Project1
 # Resources
 https://www.pro-football-reference.com/draft/2019-combine.htm#combine
 
