@@ -3,6 +3,7 @@ Project1 is an analysis of the 2019 NFL Combine using a Scala console applicatio
 # MVP
 - Login functionality
   - 2 types of users: ADMIN & BASIC
+  - Partitioned table
 - Analysis:
   - Average 40yd,Vertical,Bench,Broad Jump,3Cone,Shuttle
     - Overall & by position
@@ -17,6 +18,8 @@ Project1 is an analysis of the 2019 NFL Combine using a Scala console applicatio
 - HDFS
 - Scala
 - Hive
+- Hadoop
+- Spark
 # Get Started
 $ git clone https://github.com/savajones/Project1
 # Resources
