@@ -1,5 +1,5 @@
 # Project 1
-Project1 is an analysis of the 2019 NFL Combine using a Scala console application that is retrieving data using Hive.
+Project 1 is an analysis of the 2019 NFL Combine using a Scala console application that is retrieving data using Hive.
 # MVP
 - Login functionality
   - 2 types of users: ADMIN & BASIC
