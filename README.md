@@ -12,7 +12,7 @@ Project 1 is an analysis of the 2019 NFL Combine using a Scala console applicati
   - Number of different schools that got drafted
   - School with the most draft picks
   - Clemson athlete draft picks (tm/rnd/yr)
-    - ADMIN can change school and export into JSON file
+    - ADMIN can change school and export to JSON file
 # Technologies
 - YARN
 - HDFS
