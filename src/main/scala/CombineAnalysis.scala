@@ -80,6 +80,10 @@ object CombineAnalysis {
           case 2 =>
             println("Returning to ADMIN menu...")
             adminm()
+          case _ =>
+            /*----INPUT MISMATCH----*/
+            println("Not a valid input")
+            adminm()
         }
       case 5 =>
         /*----UPDATE USERNAME----*/
@@ -113,6 +117,10 @@ object CombineAnalysis {
         /*----LOGOUT----*/
         println("Successfully logged out")
         main(null)
+      case _ =>
+        /*----INPUT MISMATCH----*/
+        println("Not a valid input")
+        adminm()
     }
   }
 
@@ -161,6 +169,10 @@ object CombineAnalysis {
         /*----LOGOUT----*/
         println("Successfully logged out")
         main(null)
+      case _ =>
+        /*----INPUT MISMATCH----*/
+        println("Not a valid input")
+        basicm()
     }
   }
 
@@ -202,6 +214,10 @@ object CombineAnalysis {
             /*----By position----*/
             spark.sql("SELECT Pos,AVG(40yd) AS 40yd,AVG(Vertical) AS Vertical,AVG(Bench) AS Bench,AVG(3Cone) AS 3Cone,AVG(Shuttle) AS Shuttle FROM 2019NFLCombine GROUP BY Pos").show()
             queries()
+          case _ =>
+            /*----INPUT MISMATCH----*/
+            println("Not a valid input")
+            queries()
         }
       case 2 =>
         /*----Top 10 athletes in each event----*/
@@ -233,6 +249,10 @@ object CombineAnalysis {
             /*----Shuttle----*/
             spark.sql("SELECT Player,Pos,Shuttle FROM 2019NFLCombine ORDER BY Shuttle ASC NULLS LAST LIMIT 10 ").show()
             queries()
+          case _ =>
+            /*----INPUT MISMATCH----*/
+            println("Not a valid input")
+            queries()
         }
       case 3 =>
         /*----Min and max of each event----*/
@@ -253,6 +273,10 @@ object CombineAnalysis {
       case 6 =>
         /*----Clemson athlete draft picks (tm/rnd/yr)----*/
         spark.sql("SELECT Player,School,Drafted AS Draft_Pick FROM 2019NFLCombine WHERE School='Clemson' AND Drafted IS NOT NULL").show(1000,1000,false)
+      case _ =>
+        /*----INPUT MISMATCH----*/
+        println("Not a valid input")
+        queries()
     }
   }
 
@@ -294,6 +318,10 @@ object CombineAnalysis {
       case 2 =>
         /*----NEW USER----*/
         newusr(2)
+      case _ =>
+        /*----INPUT MISMATCH----*/
+        println("Not a valid input")
+        main(null)
     }
   }
 
